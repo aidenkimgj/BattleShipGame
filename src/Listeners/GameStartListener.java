@@ -37,14 +37,17 @@ public class GameStartListener implements Runnable, ActionListener {
 	public Socket socket;
 
 /**
+ * This constructor set latest my field position
  * 
- * @param gamePanel
+ * 
  */
-	public GameStartListener(GamePanel gamePanel) {
+	public GameStartListener() {
 
 		this.field = BoardPanel_left.updatePosition;
 	}
-
+	/**
+	 * Overrides actionPerformed method for game start
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
@@ -61,9 +64,13 @@ public class GameStartListener implements Runnable, ActionListener {
 		}
 	}
 
+	/**
+	 * Thread execute method
+	 */
 	@Override
 	public void run() {
 		try {
+			// Send my field to enemy via server
 			for (int i = 0; i < field.length; i++) {
 				for (int j = 0; j < field.length; j++) {
 					pw.println(Integer.toString(field[i][j]));
@@ -72,7 +79,7 @@ public class GameStartListener implements Runnable, ActionListener {
 
 			int i = 0;
 			int j = 0;
-
+			// take enemy field from opposite via server
 			while ((str = (String) br.readLine()) != null) {
 				enemyField[i][j] = Integer.parseInt(str);
 				j++;
