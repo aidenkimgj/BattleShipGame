@@ -1,167 +1,144 @@
- package BattleShip_chat;
+package BattleShip_chat;
 
-import java.net.*; // ServerSocket, Socket 
-import java.io.*;  // 입출력
-
-// 동적 배열, 접속한 클라이언트의 정보를 실시간으로 저장하는 목적(고정 배열X)
+import java.net.*;
+import java.io.*;
 import java.util.Vector;
 
+/**
+ * The chatServer class implements Battleship program that communicate
+ * between game users.
+ * 
+ * @author Hong, Kim, and Sung.
+ * @version Feb 11, 2021
+ */
 public class chat_server {
 
-    // 클라이언트와 연결할 때만 필요한 ServerSocket 클래스
-    ServerSocket ss;
+	ServerSocket ss;
+	Socket s;
+	Vector v;
+	ServerThread st;
 
-    // 서버로 접속한 클라이언트 Socket을 저장할 멤버 변수
-    Socket s;
+	/**
+	 * 
+	 */
+	public chat_server() {
+		// Create vector object for users.
+		v = new Vector();
 
-    // 접속 클라이언트 정보 실시간 저장
-    Vector v;
+		try {
+			// Create serverSocket.
+			ss = new ServerSocket(5454);
+			System.out.println("Chat server is running...");
 
-    // ServerThread 자료형 멤버 변수 선언, has-a 관계 설정을 위함
-    ServerThread st;
-//    int port;
+			while (true) {
+				s = ss.accept();
+				st = new ServerThread(this, s);
+				this.addThread(st);
+				st.start();
+			}
+		} catch (Exception e) {
+			// Display error message.
+			System.out.println("Fail to connect..>>>" + e);
+		}
+	}
 
-    // 생성자, 멤버 변수 초기화
-    public chat_server() {
-        // 사용자 정보를 담을 v를 Vector 객체로 초기화
-        v = new Vector();
-//        this.port = port;
-        // 접속이 될 수도 있고 안 될 수도 있기 때문에 예외 처리
-        try {
-            // ServerSocket 객체 생성 → 포트 번호 생성(임의의 번호 부여)
-            ss = new ServerSocket(5454);
-            System.out.println("ss>>>" + ss);
-            System.out.println("Chat server is running...");
+	// 벡터 v에 접속 클라이언트의 스레드 저장
+	/**
+	 * 
+	 * @param st
+	 */
+	public void addThread(ServerThread st) {
+		v.add(st);
+	}
 
-            // 서버 가동: 클라이언트가 접속할 때까지 기다리는 것(무한 대기)
-            while (true) {
-                // 접속 클라이언트 Socket을 s 변수에 저장
-                s = ss.accept();
-                System.out.println("Accepted from" + s);
-                // 접속 클라이언트와 서버로 st객체 생성
-                st = new ServerThread(this, s);
+	// 퇴장한 클라이언트 스레드 제거
+	/**
+	 * 
+	 * @param st
+	 */
+	public void removeThread(ServerThread st) {
+		v.remove(st);
+	}
 
-                // 접속할 때마다 v에 접속 클라이언트 스레드 추가
-                this.addThread(st);
+	// 각 클라이언트에게 메세지를 출력하는 메소드, send() 호출
+	/**
+	 * 
+	 * @param str
+	 */
+	public void broadCast(String str) {
+		for (int i = 0; i < v.size(); i++) {
+			ServerThread st = (ServerThread) v.elementAt(i);
+			st.send(str);
+		}
+	}
 
-                // Thread 가동 -> run() -> broadCast() -> send() 실시간 메소드 호출
-                st.start();
-            }
-
-        } catch (Exception e) {
-            // 접속 실패시 간단한 Error 메세지 출력
-            System.out.println("Fail to connect..>>>" + e);
-        }
-    }
-
-    // 벡터 v에 접속 클라이언트의 스레드 저장
-    public void addThread(ServerThread st) {
-        v.add(st);
-    }
-
-    // 퇴장한 클라이언트 스레드 제거
-    public void removeThread(ServerThread st) {
-        v.remove(st);
-    }
-
-    // 각 클라이언트에게 메세지를 출력하는 메소드, send() 호출
-    public void broadCast(String str) {
-        for (int i = 0; i < v.size(); i++) {
-            // 각각의 클라이언트를 ServerThread 객체로 형 변환 
-            ServerThread st = (ServerThread) v.elementAt(i);
-
-            // 각 스레드 객체에 str 문자열을 전송
-            st.send(str);
-        }
-    }
-
-    public static void main(String[] args) {
-
-        // 익명 객체 생성
-        new chat_server();
-
-    }
-
+	public static void main(String[] args) {
+		new chat_server();
+	}
 }
 
 // ServerThread 클래스 생성 → 서버에서 각 클라이언트의 요청을 처리할 스레드
+/**
+ * 
+ * @author Hong, Kim, and Sung.
+ * @version Feb 11, 2021
+ */
 class ServerThread extends Thread {
+	Socket s;
+	chat_server cg;
+	BufferedReader br;
+	PrintWriter pw;
+	String str;
+	String name;
 
-    // 클라이언트 소켓 저장
-    Socket s;
+	// 생성자
+	/**
+	 * 
+	 * @param cg
+	 * @param s
+	 */
+	public ServerThread(chat_server cg, Socket s) {
+		this.cg = cg;
+		this.s = s;
 
-    // ChatGUIServer 클래스의 객체를 멤버 변수로 선언, has-a 관계를 위함
-    chat_server cg;
+		try {
+			br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			pw = new PrintWriter(s.getOutputStream(), true);
+		} catch (Exception e) {
+			System.out.println("Error..>>>>>" + e);
+		}
+	}
 
-    // 입출력
-    BufferedReader br;
-    PrintWriter pw;
+	// 메세지(입력 문자열) 출력 메소드
+	/**
+	 * 
+	 * @param str
+	 */
+	public void send(String str) {
+		pw.println(str);
+		pw.flush();
+	}
 
-    // 전달할 문자열
-    String str;
+	
+	@Override
+	/**
+	 * Override the run() method for chatServer.
+	 */
+	public void run() {
+		try {
+			pw.println("Please enter your name..");
+			name = br.readLine();
+			cg.broadCast("[" + name + "]" + " is joined.");
 
-    // 대화명(ID)
-    String name;
-
-    // 생성자
-    public ServerThread(chat_server cg, Socket s) {
-        /* cg = new ChatGUIServer(); → 작성 불가, 서버가 두 번 가동되기 때문에 충돌이 일어남
-        따라서 매개변수를 이용해서 객체를 얻어온(call by reference) 뒤에 cg와 s값을 초기화해야 함
-        */
-        this.cg = cg;
-
-        // 접속한 클라이언트 정보 저장
-        this.s = s;
-
-        // 데이터 전송을 위한 입출력 스트림 생성
-        try {
-            // =========== 입력 ===========
-            // s.getInputStream() => 접속 클라이언트(소켓 객체)의 InputStream을 얻어 옴
-            br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            // =========== 출력 ===========
-            /*
-            BufferedWriter의 경우 버퍼링 기능을 가지기 때문에 PrintWriter 스트림 사용
-            PrintWriter 스트림의 경우 생성자의 두 번째 인자로 autoFlush 기능을 지정할 수 있음
-            BufferedWriter를 사용하는 경우 flush() 메소드를 사용해야 함
-            */
-            pw = new PrintWriter(s.getOutputStream(), true);
-        } catch (Exception e) {
-            System.out.println("Error..>>>>>" + e);
-        }
-    }
-
-    // 메세지(입력 문자열) 출력 메소드
-    public void send(String str) {
-        // 문자열 출력
-        pw.println(str);
-
-        // 혹시나 버퍼에 남아있는 것을 비워냄
-        pw.flush();
-    }
-
-    // run()_ServerThread -> broadCast(str)_ChatGUIServer -> send(str)_ServerThread
-    public void run() {
-        try {
-            // 대화명 입력 받기
-            pw.println("Please enter your name..");
-            name = br.readLine();
-
-            // 서버에서 각 클라이언트에 대화명 출력
-            cg.broadCast("[" + name + "]" + " is joined.");
-
-            // 무한 대기하며 입력한 메세지를 각 클라이언트에 계속 전달
-            while ((str = br.readLine()) != null) {
-                cg.broadCast("[" + name + "]: " + str);
-            }
-        } catch (Exception e) {
-            // 접속자 퇴장시 v에서 해당 클라이언트 스레드 제거
-            cg.removeThread(this); // this: ServerThread 객체, 접속 클라이언트
-             // 서버에서 각 클라이언트에 출력
-            cg.broadCast("[" + name + "]" + " left.");
-
-            // 콘솔에 퇴장 클라이언트 IP 주소 출력
-            System.out.println(s.getInetAddress() + " connection finished.");
-        }
-    }
+			while ((str = br.readLine()) != null) {
+				cg.broadCast("[" + name + "]: " + str);
+			}
+			
+		} catch (Exception e) {
+			cg.removeThread(this);
+			cg.broadCast("[" + name + "]" + " left.");
+			System.out.println(s.getInetAddress() + " connection finished.");
+		}
+	}
 
 }
