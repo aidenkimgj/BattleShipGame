@@ -44,8 +44,8 @@ public class HitAndMissController implements ActionListener, Runnable {
 	/**
 	 * Constructor set field row, column and enemyField
 	 * 
-	 * @param row
-	 * @param column
+	 * @param row row
+	 * @param column column
 	 */
 	public HitAndMissController(int row, int column) {
 		this.row = row;

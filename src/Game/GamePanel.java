@@ -1,12 +1,11 @@
 
 package Game;
 
-import java.awt.Color;
+import java.awt.Color; 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -15,11 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
 
 
-import BattleShip_chat.chat_server;
 import Listeners.GameMenuListener;
 import Listeners.GameStartListener;
 
@@ -30,6 +26,9 @@ import javax.swing.JLabel;
 import javax.swing.JRadioButton;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+
+
 import javax.swing.JSeparator;
 /**
  * This is game panel
@@ -43,7 +42,6 @@ public class GamePanel implements Runnable, ActionListener {
  */
 	private JFrame frame;
 	private JTextField textField;
-	private JTextField textField_2;
 	private JTextField textField_1;
 	private JTextField txtEnter;
 	private JButton connectBtn;
@@ -61,7 +59,7 @@ public class GamePanel implements Runnable, ActionListener {
 
 /**
  * Launch the application.
- * @param args
+ * @param args arguments
  */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {

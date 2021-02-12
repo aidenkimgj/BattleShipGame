@@ -24,10 +24,10 @@ public class GameMenuListener implements ActionListener {
 	private JButton horizontalBtn;
 /**
  * GameMenuListener constructor
- * @param vertical
- * @param horizontal
- * @param verticalBtn
- * @param horizontalBtn
+ * @param vertical boolean type 
+ * @param horizontal boolean type
+ * @param verticalBtn jbutton
+ * @param horizontalBtn jbutton
  */
 	public GameMenuListener(boolean vertical, boolean horizontal, JButton verticalBtn, JButton horizontalBtn) {
 		this.vertical = vertical;

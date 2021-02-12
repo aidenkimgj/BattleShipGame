@@ -26,8 +26,8 @@ public class ButtonPressed implements ActionListener {
 	/**
 	 * Constructor for selecting boat size.
 	 * 
-	 * @param boatSize
-	 * @param btn
+	 * @param boatSize boatsize
+	 * @param btn raido button
 	 */
 	public ButtonPressed(int boatSize, JRadioButton btn) {
 		this.boatSize = boatSize;
@@ -37,9 +37,9 @@ public class ButtonPressed implements ActionListener {
 	
 	/**
 	 * Constructor for updating the position of the left panel.
-	 * @param rows
-	 * @param columns
-	 * @param board
+	 * @param rows rows
+	 * @param columns columns
+	 * @param board board
 	 */
 	public ButtonPressed(int rows, int columns, BoardPanel_left board) {
 		this.rows = rows;
@@ -50,8 +50,8 @@ public class ButtonPressed implements ActionListener {
 	
 	/**
 	 * Constructor for vertical and horizontal on the grid layout.
-	 * @param vertical
-	 * @param horizontal
+	 * @param vertical vertical	
+	 * @param horizontal horizontal
 	 */
 	public ButtonPressed(boolean vertical, boolean horizontal) {
 		this.vertical = vertical;
@@ -77,7 +77,7 @@ public class ButtonPressed implements ActionListener {
 	
 	/**
 	 * This method is to set the boat position.
-	 * @param e
+	 * @param e event
 	 */
 	private void setBoatPosition(ActionEvent e) {
 		// Create JButton class from action event.
@@ -296,8 +296,8 @@ public class ButtonPressed implements ActionListener {
 	
 	/**
 	 * The validSpot method checks valid spot.
-	 * @param boatNumber
-	 * @return
+	 * @param boatNumber boat size
+	 * @return true and false
 	 */
 	private Boolean validSpot(int boatNumber) {
 		try {
