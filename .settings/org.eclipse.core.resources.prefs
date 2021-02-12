@@ -1,3 +1,6 @@
 eclipse.preferences.version=1
+encoding//src/BattleShipSever/GameServerThread.java=UTF-8
+encoding//src/BattleShipSever/PlayServer.java=UTF-8
+encoding//src/BattleShipSever/chat_server.java=UTF-8
 encoding//src/Game/ButtonPressed.java=UTF-8
 encoding//src/Listeners/GameStartListener.java=UTF-8
