@@ -5,90 +5,122 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
 
+/**
+ * 
+ * @author Hong, Kim, and Sung.
+ * @version Feb 11, 2021
+ */
+
 public class PlayServer {
+   /**
+    * field - ss, s, v, gameServerThread, firstData.
+    */
+   // ServerSocket class to connect client and server.
+   ServerSocket ss;
+   // socket to save Socket class which comes from client.
+   Socket s;
+   // vector class to save all clients.
+   Vector v;
+   // Thread class to create unique client.
+   GameServerThread gameServerThread;
+   // ArrayList to save all field value which comes from client.
+   ArrayList<String> firstData = new ArrayList<String>();
 
-	// 클라이언트와 연결할 때만 필요한 ServerSocket 클래스
-	ServerSocket ss;
+   int count = 0;
+   /**
+    * This is PlayServer class constructor.
+    */
+   public PlayServer() {
+      v = new Vector();
+      try {
+         // create new serverSocket class to connect port number 9999.
+         ss = new ServerSocket(9999);
+         System.out.println("Game server is running...");
+         // infinity loop, wait for the client connection.
+         while (true) {
+            // when client connect to this server, accept method would catch that request.
+            s = ss.accept();
+            // create new GameServerTherad with two parameters.
+            gameServerThread = new GameServerThread(this, s);
+            // call addThread to add client info.
+            this.addThread(gameServerThread);
+            // Thread runs => run() => broadCast() => send() real-time call method.
+            gameServerThread.start();
+         }
 
-	// 서버로 접속한 클라이언트 Socket을 저장할 멤버 변수
-	Socket s;
+      } catch (Exception e) {
+         // print fail message.
+         System.out.println("Fail to connect..>>>" + e);
+      }
+   }
 
-	// 접속 클라이언트 정보 실시간 저장
-	Vector v;
+   /**
+    * 
+    * @param st
+    * save client thread into vector.
+    */
+   public void addThread(GameServerThread st) {
+      v.add(st);
+   }
 
-	// ServerThread 자료형 멤버 변수 선언, has-a 관계 설정을 위함
-	GameServerThread gameServerThread;
+   /**
+    * 
+    * @param st
+    * remove client thread in vector.
+    */
+   public void removeThread(GameServerThread st) {
+      v.remove(st);
+   }
 
-	ArrayList<String> firstData = new ArrayList<String>();
 
-	int count = 0;
+   /**
+    * 
+    * @param str
+    * @param gameServerThread2
+    *  This method send data to clients.
+    */
+   public void broadCast(String str, GameServerThread gameServerThread2) {
+      // runs when there are 3 client threads, then save all string data into firstData(ArrayList).
+      if (v.size() == 3) {
+         firstData.add(str);
+         // runs when there are 4 client threads.
+      } else if (v.size() == 4) {
+         // share each panel's field here.
+         if (str.length() < 3) {
+            // save each panel's identity into st_01 and st_00.
+            // st_01 - the GamePanel which is the second opened.
+            // st_00 - the GamePanel which is the first opened .
+            GameServerThread st_01 = (GameServerThread) v.elementAt(3);
+            GameServerThread st_00 = (GameServerThread) v.elementAt(2);
+            // send the first opened GamePanel's field values to second opened GamePanel.
+            st_01.send(firstData.get(count));
+            count++;
+            // send second opened GamePanel's field value to the first opened GamePanel.
+            st_00.send(str);
 
-	public PlayServer() {
-		v = new Vector();
+            // runs when the user click the button on the panel to attack.
+         } else {
+            // save each panel's identity into st_01_01 and st_00_01.
+            // st_00_01 - the right BoardPanel.
+            // st_01_01 - the left BoardPanel.
+            GameServerThread st_01_01 = (GameServerThread) v.elementAt(1);
+            GameServerThread st_00_01 = (GameServerThread) v.elementAt(0);
+            // determines between left and right panels.
+            if (gameServerThread2 == v.elementAt(0)) {
+               // send row and column to left BoardPanel.
+               st_01_01.send(str);
+            } else if (gameServerThread2 == v.elementAt(1)) {
+               // send row and column to right BoardPanel.
+               st_00_01.send(str);
+            }
+         }
 
-		try {
+      }
 
-			ss = new ServerSocket(9999);
-			System.out.println("Game server is running...");
-			while (true) {
-				s = ss.accept();
+   }
 
-				gameServerThread = new GameServerThread(this, s);
-				this.addThread(gameServerThread);
-
-				// Thread 가동 -> run() -> broadCast() -> send() 실시간 메소드 호출
-				gameServerThread.start();
-			}
-
-		} catch (Exception e) {
-			// 접속 실패시 간단한 Error 메세지 출력
-			System.out.println("Fail to connect..>>>" + e);
-		}
-	}
-
-	// 벡터 v에 접속 클라이언트의 스레드 저장
-	public void addThread(GameServerThread st) {
-		v.add(st);
-	}
-
-	// 퇴장한 클라이언트 스레드 제거
-	public void removeThread(GameServerThread st) {
-		v.remove(st);
-	}
-
-	// 각 클라이언트에게 메세지를 출력하는 메소드, send() 호출
-	public void broadCast(String str, GameServerThread gameServerThread2) {
-		if (v.size() == 3) {
-
-			firstData.add(str);
-		} else if (v.size() == 4) {
-
-			if (str.length() < 3) {
-				GameServerThread st_01 = (GameServerThread) v.elementAt(3);
-				GameServerThread st_00 = (GameServerThread) v.elementAt(2);
-
-				st_01.send(firstData.get(count));
-				count++;
-				st_00.send(str);
-
-			} else {
-				GameServerThread st_01_01 = (GameServerThread) v.elementAt(1);
-				GameServerThread st_00_01 = (GameServerThread) v.elementAt(0);
-				if (gameServerThread2 == v.elementAt(0)) {
-					st_01_01.send(str);
-//					System.out.println("두번째로 넘긴다.... " + str);
-				} else if (gameServerThread2 == v.elementAt(1)) {
-					st_00_01.send(str);
-//					System.out.println("첫번째로 넘긴다... " + str);
-				}
-			}
-
-		}
-
-	}
-
-	public static void main(String[] args) {
-		new PlayServer();
-	}
+   public static void main(String[] args) {
+      new PlayServer();
+   }
 
 }

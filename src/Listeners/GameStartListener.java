@@ -18,12 +18,16 @@ import Game.BoardPanel_left;
 import Game.GamePanel;
 
 /**
+ * This class is GameStartListener in order to game start
  * 
  * @author Hong, Kim and Sung
  * @version Feb 11, 2021
  *
  */
 public class GameStartListener implements Runnable, ActionListener {
+	/**
+	 * attribute
+	 */
 	int[][] field;
 	GamePanel gamePanel;
 	private BufferedReader br;
@@ -31,13 +35,19 @@ public class GameStartListener implements Runnable, ActionListener {
 	private String str;
 	public static int[][] enemyField = new int[10][10];
 	public Socket socket;
-//	private Socket socket;
 
-	public GameStartListener(GamePanel gamePanel) {
-//		this.socket = GamePanel.socket;
+/**
+ * This constructor set latest my field position
+ * 
+ * 
+ */
+	public GameStartListener() {
+
 		this.field = BoardPanel_left.updatePosition;
 	}
-
+	/**
+	 * Overrides actionPerformed method for game start
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
@@ -54,9 +64,13 @@ public class GameStartListener implements Runnable, ActionListener {
 		}
 	}
 
+	/**
+	 * Thread execute method
+	 */
 	@Override
 	public void run() {
 		try {
+			// Send my field to enemy via server
 			for (int i = 0; i < field.length; i++) {
 				for (int j = 0; j < field.length; j++) {
 					pw.println(Integer.toString(field[i][j]));
@@ -65,10 +79,7 @@ public class GameStartListener implements Runnable, ActionListener {
 
 			int i = 0;
 			int j = 0;
-			int x = 0;
-			int y = 0;
-			int count = 0;
-			// ë³´ë“œ ëˆŒëŸ¬ë�„ ê³„ì†� ì—¬ê¸°ì„œ ì�½ì�Œ.........................
+			// take enemy field from opposite via server
 			while ((str = (String) br.readLine()) != null) {
 				enemyField[i][j] = Integer.parseInt(str);
 				j++;

@@ -7,13 +7,28 @@ import javax.swing.JButton;
 
 import Game.ButtonPressed;
 
+/**
+ * This class is GameMenuListener in order to set vertical and horizontal
+ * 
+ * @author Hong, Kim and Sung
+ * @version Feb 11, 2021
+ *
+ */
 public class GameMenuListener implements ActionListener {
-
-	public boolean vertical;
-	public boolean horizontal;
-	JButton verticalBtn;
-	JButton horizontalBtn;
-
+/**
+ * attribute
+ */
+	private boolean vertical;
+	private boolean horizontal;
+	private JButton verticalBtn;
+	private JButton horizontalBtn;
+/**
+ * GameMenuListener constructor
+ * @param vertical
+ * @param horizontal
+ * @param verticalBtn
+ * @param horizontalBtn
+ */
 	public GameMenuListener(boolean vertical, boolean horizontal, JButton verticalBtn, JButton horizontalBtn) {
 		this.vertical = vertical;
 		this.horizontal = horizontal;
@@ -21,7 +36,9 @@ public class GameMenuListener implements ActionListener {
 		this.horizontalBtn = horizontalBtn;
 	}
 	
-
+/**
+ * actionPerformed method for use vertical and horizontal button
+ */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton btn = (JButton) e.getSource();

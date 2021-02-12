@@ -36,45 +36,44 @@ class GameServerThread extends Thread {
       // save socket into the field.
       this.socket = s;
 
-      // 데이터 전송을 위한 입출력 스트림 생성
       /**
        * create I/O stream for the data transfer.
        */
       try {
-         // input - s.getInputStream() => get socker object's inputStream.
+         // input - socket.getInputStream() => get socket object's inputStream.
          br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-         
+         // output - socket.getOutputStream() => get socket object's outputStream.
          pw = new PrintWriter(socket.getOutputStream(), true);
-
+         
       } catch (Exception e) {
          System.out.println("Erorr..>>>>>" + e);
       }
    }
 
-   // 메세지(입력 문자열) 출력 메소드
+   /**
+    * 
+    * @param str
+    * This method print input string(message). 
+    */
    public void send(String str) {
-
-      
       pw.println(str);
-//      pw.flush();
    }
 
+   /**
+    * This run() method is executed when the instance of GameServerThread call start() method.
+    */
    public void run() {
-
       try {
 
-         // 무한 대기하며 입력한 메세지를 각 클라이언트에 계속 전달
+         // Wait indefinitely and continuously forward the entered message to each client.
          while ((str = (String) br.readLine()) != null) {
+            // call broadCast of playServer.
             playServer.broadCast(str, this);
-            
-
          }
-         
-         
       } catch (Exception e) {
-
-         playServer.removeThread(this); // this: ServerThread 객체, 접속 클라이언트
-
+         // Call removeThread function to remove a thread in vector.
+         playServer.removeThread(this); 
+         
          System.out.println(socket.getInetAddress() + " connection finished!");
       }
    }

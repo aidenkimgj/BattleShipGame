@@ -31,9 +31,16 @@ import javax.swing.JRadioButton;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JSeparator;
-
+/**
+ * This is game panel
+ * 
+ * @author Hong, Kim, and Sung.
+ * @version Feb 11, 2021
+ */
 public class GamePanel implements Runnable, ActionListener {
-
+/**
+ * attribute
+ */
 	private JFrame frame;
 	private JTextField textField;
 	private JTextField textField_2;
@@ -52,13 +59,17 @@ public class GamePanel implements Runnable, ActionListener {
 	private int boatsize;
 	public static Socket AttackSocket;
 
-	// Launch the application.
+/**
+ * Launch the application.
+ * @param args
+ */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					GamePanel window = new GamePanel();
 					window.frame.setVisible(true);
+					// Create attack socket
 					AttackSocket = new Socket("localhost", 9999);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -66,13 +77,17 @@ public class GamePanel implements Runnable, ActionListener {
 			}
 		});
 	}
+/**
+ * 	Create the application.
+ */
 
-	// Create the application.
 	public GamePanel() {
 		initialize();
 	}
 
-	// Initialize the contents of the frame.
+/**
+ * Initialize the contents of the frame.
+ */
 	private void initialize() {
 		BoardPanel_left bp_left = new BoardPanel_left();
 		BoardPanel_right bp_right = new BoardPanel_right();
@@ -99,7 +114,7 @@ public class GamePanel implements Runnable, ActionListener {
 		textArea_chat = new JTextArea();
 		textArea_chat.setBounds(43, 86, 290, 403);
 		textArea_chat.setEditable(false);
-
+		// Create scroll for chatting window
 		JScrollPane scrollPane = new JScrollPane(textArea_chat, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBounds(36, 77, 290, 510);
@@ -113,14 +128,14 @@ public class GamePanel implements Runnable, ActionListener {
 		bp2_panel.setBounds(825, 27, 403, 403);
 		panel.add(bp2_panel);
 
-		// 서버 ip 주소
+		// Get ip address
 		JLabel lblNewLabel = new JLabel("Server IP");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(982, 541, 62, 27);
 		panel.add(lblNewLabel);
 
-		// 서버 port
+        // Get port number
 		JLabel lblPort = new JLabel("Port");
 		lblPort.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblPort.setHorizontalAlignment(SwingConstants.CENTER);
@@ -137,23 +152,23 @@ public class GamePanel implements Runnable, ActionListener {
 		txtEnter.setColumns(10);
 		txtEnter.setBounds(1066, 580, 136, 23);
 		panel.add(txtEnter);
-
+		// connect button for use chatting
 		connectBtn = new JButton("Connect");
 		connectBtn.setForeground(Color.WHITE);
 		connectBtn.setBounds(1050, 623, 85, 21);
 		panel.add(connectBtn);
 		connectBtn.setBackground(Color.DARK_GRAY);
 		
-		
+		// button listener
 		connectBtn.addActionListener(this);
 	
 		ButtonGroup ships = new ButtonGroup();
-			
+		// Choose ship size	
 		JRadioButton destroyerBtn = new JRadioButton("Destroyer");
 		destroyerBtn.setBounds(361, 581, 85, 21);
 		ships.add(destroyerBtn);
 		panel.add(destroyerBtn);
-		
+		// radio button listener
 		destroyerBtn.addActionListener(e -> new ButtonPressed(2, destroyerBtn));
 
 		JRadioButton submarineBtn = new JRadioButton("Submarine");
@@ -191,6 +206,7 @@ public class GamePanel implements Runnable, ActionListener {
 		lblShips.setBounds(361, 526, 110, 27);
 		panel.add(lblShips);
 		
+		// Vertical button
 		JButton verticalBtn = new JButton("Vertical");
 		verticalBtn.setBackground(Color.DARK_GRAY);
 		verticalBtn.setForeground(Color.WHITE);
@@ -198,15 +214,18 @@ public class GamePanel implements Runnable, ActionListener {
 		verticalBtn.setEnabled(false);
 		panel.add(verticalBtn);
 				
+		// Horizontal button
 		JButton horizontalBtn = new JButton("Horizontal");
 		horizontalBtn.setForeground(Color.WHITE);
 		horizontalBtn.setBackground(Color.DARK_GRAY);
 		horizontalBtn.setBounds(647, 626, 103, 27);
 		panel.add(horizontalBtn);
 		
+		// Vertical button and Horizontal button listener
 		verticalBtn.addActionListener(new GameMenuListener(true, false,verticalBtn,horizontalBtn));
 		horizontalBtn.addActionListener(new GameMenuListener(false, true,verticalBtn, horizontalBtn));
 		
+		// game start button
 		JButton startBtn = new JButton("Game Start");
 		startBtn.setForeground(Color.WHITE);
 		startBtn.setBackground(Color.DARK_GRAY);
@@ -242,36 +261,41 @@ public class GamePanel implements Runnable, ActionListener {
 		lblChatSetting.setBounds(990, 502, 174, 23);
 		panel.add(lblChatSetting);
 		
-		startBtn.addActionListener(new GameStartListener(this));
+		startBtn.addActionListener(new GameStartListener());
 
 	}
-
+/**
+ * Thread execute method for chatting
+ */
 	public void run() {
-		// 더 이상 입력을 받을 수 없을 때까지 JTextArea(채팅창)에 출력
+	
 		try {
+			// Get message from opposite person
 			while ((str1 = br.readLine()) != null) {
-				textArea_chat.append(str1 + "\n"); // 상대방이 보낸 문자를 채팅창에 세로로 출력
+				textArea_chat.append(str1 + "\n"); 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	
+	/**
+	 * actionPerformed method for chatting 
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		serverip = textField_1.getText();
 		port =Integer.parseInt(txtEnter.getText());
 
-		// 클라이언트 측 소켓 정보 초기화
-		// Socket(host, port), host: 접속 서버 IP 주소, port: 서버 포트 번호
+
 		try {
+			// Create socket for chatting
 			s = new Socket(serverip, port);
 
-			// ========== Server와 Stream 연결 ===========
+			// InputStream
 			br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			// PrintWriter 스트림의 autoFlush 기능 활성화
+			// OutputStream
 			pw = new PrintWriter(s.getOutputStream(), true);
 
 		} catch (Exception e2) {
@@ -282,10 +306,18 @@ public class GamePanel implements Runnable, ActionListener {
 		ct.start();
 
 	}
-
+/**
+ * 
+ * Inner class for Chatting listener
+ *
+ */
 	class ChattingLtnr implements ActionListener {
 
 		@Override
+		/**
+		 * actionPerformed method for chatting
+		 * send message to opposite person
+		 */
 		public void actionPerformed(ActionEvent e) {
 			str = textField.getText();
 			textField.setText("");
