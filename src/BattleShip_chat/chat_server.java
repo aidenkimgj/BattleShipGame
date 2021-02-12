@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.Vector;
 
 /**
- * The chatServer class implements Battleship program that communicate
+ * The chatServer class is a server for implementing a battleship program that communicates
  * between game users.
  * 
  * @author Hong, Kim, and Sung.
@@ -19,14 +19,12 @@ public class chat_server {
 	ServerThread st;
 
 	/**
-	 * 
+	 * Call Vector and ServerSocket classes in this method.
 	 */
 	public chat_server() {
-		// Create vector object for users.
 		v = new Vector();
 
 		try {
-			// Create serverSocket.
 			ss = new ServerSocket(5454);
 			System.out.println("Chat server is running...");
 
@@ -37,32 +35,32 @@ public class chat_server {
 				st.start();
 			}
 		} catch (Exception e) {
-			// Display error message.
 			System.out.println("Fail to connect..>>>" + e);
 		}
 	}
 
-	// 벡터 v에 접속 클라이언트의 스레드 저장
+
 	/**
-	 * 
+	 * Connected users is saved Thread into Vector.
 	 * @param st
 	 */
 	public void addThread(ServerThread st) {
+		// Server thread add in the vector.
 		v.add(st);
 	}
 
-	// 퇴장한 클라이언트 스레드 제거
+
 	/**
-	 * 
+	 * This method remove server thread.
 	 * @param st
 	 */
 	public void removeThread(ServerThread st) {
 		v.remove(st);
 	}
 
-	// 각 클라이언트에게 메세지를 출력하는 메소드, send() 호출
+
 	/**
-	 * 
+	 * Each users display message with send method.
 	 * @param str
 	 */
 	public void broadCast(String str) {
@@ -72,13 +70,19 @@ public class chat_server {
 		}
 	}
 
+	
+	/**
+	 * This method is main.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		new chat_server();
 	}
 }
 
-// ServerThread 클래스 생성 → 서버에서 각 클라이언트의 요청을 처리할 스레드
+
 /**
+ * Create ServerThread class.
  * 
  * @author Hong, Kim, and Sung.
  * @version Feb 11, 2021
@@ -91,8 +95,9 @@ class ServerThread extends Thread {
 	String str;
 	String name;
 
-	// 생성자
+
 	/**
+	 * Constructor
 	 * 
 	 * @param cg
 	 * @param s
@@ -100,7 +105,8 @@ class ServerThread extends Thread {
 	public ServerThread(chat_server cg, Socket s) {
 		this.cg = cg;
 		this.s = s;
-
+		
+		// Read text messages by using BufferedReader.
 		try {
 			br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			pw = new PrintWriter(s.getOutputStream(), true);
@@ -109,8 +115,9 @@ class ServerThread extends Thread {
 		}
 	}
 
-	// 메세지(입력 문자열) 출력 메소드
+
 	/**
+	 * The send method send messages.
 	 * 
 	 * @param str
 	 */
@@ -122,10 +129,11 @@ class ServerThread extends Thread {
 	
 	@Override
 	/**
-	 * Override the run() method for chatServer.
+	 * Override the run() method for chat_server.
 	 */
 	public void run() {
 		try {
+			// Display message for users.
 			pw.println("Please enter your name..");
 			name = br.readLine();
 			cg.broadCast("[" + name + "]" + " is joined.");
