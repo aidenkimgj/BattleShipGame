@@ -18,12 +18,16 @@ import Game.BoardPanel_left;
 import Game.GamePanel;
 
 /**
+ * This class is GameStartListener in order to game start
  * 
  * @author Hong, Kim and Sung
  * @version Feb 11, 2021
  *
  */
 public class GameStartListener implements Runnable, ActionListener {
+	/**
+	 * attribute
+	 */
 	int[][] field;
 	GamePanel gamePanel;
 	private BufferedReader br;
@@ -31,10 +35,13 @@ public class GameStartListener implements Runnable, ActionListener {
 	private String str;
 	public static int[][] enemyField = new int[10][10];
 	public Socket socket;
-//	private Socket socket;
 
+/**
+ * 
+ * @param gamePanel
+ */
 	public GameStartListener(GamePanel gamePanel) {
-//		this.socket = GamePanel.socket;
+
 		this.field = BoardPanel_left.updatePosition;
 	}
 
@@ -65,10 +72,7 @@ public class GameStartListener implements Runnable, ActionListener {
 
 			int i = 0;
 			int j = 0;
-			int x = 0;
-			int y = 0;
-			int count = 0;
-			// ë³´ë“œ ëˆŒëŸ¬ë�„ ê³„ì†� ì—¬ê¸°ì„œ ì�½ì�Œ.........................
+
 			while ((str = (String) br.readLine()) != null) {
 				enemyField[i][j] = Integer.parseInt(str);
 				j++;
