@@ -17,6 +17,12 @@ import Game.BoardPanel_left;
 
 import Game.GamePanel;
 
+/**
+ * 
+ * @author Hong, Kim and Sung
+ * @version Feb 11, 2021
+ *
+ */
 public class GameStartListener implements Runnable, ActionListener {
 	int[][] field;
 	GamePanel gamePanel;
@@ -62,7 +68,7 @@ public class GameStartListener implements Runnable, ActionListener {
 			int x = 0;
 			int y = 0;
 			int count = 0;
-			// 보드 눌러도 계속 여기서 읽음.........................
+			// ë³´ë“œ ëˆŒëŸ¬ë�„ ê³„ì†� ì—¬ê¸°ì„œ ì�½ì�Œ.........................
 			while ((str = (String) br.readLine()) != null) {
 				enemyField[i][j] = Integer.parseInt(str);
 				j++;
