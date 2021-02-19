@@ -13,7 +13,7 @@ This application is utilized programming skills in socket programming,
 threading, and data streams. These skills are used to develop a multithreaded 
 socket program of the BattleShip game implemented with a server and game client. 
 Both the client and the server have a GUI interface. The server’s GUI is used 
-to display and monitor game traffic; the client’s GUI contains a fleet map, a 
+to display and monitor game traffic the client’s GUI contains a fleet map, a 
 target map. Each player gets their own battle area with a certain number of ships 
 placed in non-overlapping positions. The ships might be of different sizes.
 
